@@ -35,8 +35,6 @@ export default function App() {
       });
 
       setAllWaves(wavesCleaned);
-    } else {
-      console.log("Objeto Ethereum inexistente!");
     }
   } catch (error) {
     console.log(error);
@@ -57,7 +55,7 @@ export default function App() {
         const signer = provider.getSigner();
         const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
         let count = await wavePortalContract.getTotalWaves();
-        console.log("Recuperado o número de tchauzinhos...", count.toNumber());
+
         setTotalWavesCount(count.toString())
       }
     } catch (ex) {
@@ -70,10 +68,7 @@ export default function App() {
       const { ethereum } = window;
 
       if (!ethereum) {
-        console.log("Garanta que possua a Metamask instalada!");
         return;
-      } else {
-        console.log("Temos o objeto ethereum", ethereum);
       }
 
       const accounts = await ethereum.request({ method: "eth_accounts" });
@@ -82,8 +77,6 @@ export default function App() {
         const account = accounts[0];
         console.log("Encontrada a conta autorizada:", account);
         setCurrentAccount(account)
-      } else {
-        console.log("Nenhuma conta autorizada foi encontrada")
       }
     } catch (error) {
       console.log(error);
@@ -101,7 +94,6 @@ export default function App() {
 
       const accounts = await ethereum.request({ method: "eth_requestAccounts" });
 
-      console.log("Conectado", accounts[0]);
       setCurrentAccount(accounts[0]);
     } catch (error) {
       console.log(error)
@@ -112,7 +104,6 @@ useEffect(() => {
   let wavePortalContract;
 
   const onNewWave = (from, timestamp, message) => {
-    console.log("NewWave", from, timestamp, message);
     setAllWaves(prevState => [
       ...prevState,
       {
@@ -148,19 +139,12 @@ useEffect(() => {
         const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
 
         let count = await wavePortalContract.getTotalWaves();
-        console.log("Recuperado o número de tchauzinhos...", count.toNumber());
-
-        
         const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 });
-        console.log("Minerando...", waveTxn.hash);
-
+        
         await waveTxn.wait();
-        console.log("Minerado -- ", waveTxn.hash);
-
+  
         count = await wavePortalContract.getTotalWaves();
-        console.log("Total de tchauzinhos recuperado...", count.toNumber());
-      } else {
-        console.log("Objeto Ethereum não encontrado!");
+
       }
     } catch (error) {
       console.log(error)
